@@ -38,47 +38,50 @@ def populate_dummy_data():
 
     # Insert blogs
     blogs = [
-        ('Intro to AI', 'intro-to-ai', '2025-04-01', 'Introduction to Artificial Intelligence.'),
-        ('Deep Learning Advances', 'deep-learning-advances', '2025-04-02', 'Recent advancements in deep learning.'),
-        ('Computer Vision Techniques', 'computer-vision-techniques', '2025-04-03', 'Techniques used in computer vision.'),
-        ('Natural Language Processing', 'natural-language-processing', '2025-04-04', 'Overview of NLP.'),
-        ('Building Robots', 'building-robots', '2025-04-05', 'How to build functional robots.'),
-        ('Ethics in AI', 'ethics-in-ai', '2025-04-06', 'Discussion on AI ethics.'),
-        ('Healthcare AI', 'healthcare-ai', '2025-04-07', 'Using AI in healthcare.'),
-        ('Autonomous Vehicles', 'autonomous-vehicles', '2025-04-08', 'Self-driving car technologies.'),
-        ('Data Science Trends', 'data-science-trends', '2025-04-09', 'Trends in data science.'),
-        ('AI in Daily Life', 'ai-in-daily-life', '2025-04-10', 'Applications of AI in everyday life.')
+        ('Intro to AI', 'blog-1-intro-to-ai', '2025-04-01', 'Introduction to Artificial Intelligence.'),
+        ('Deep Learning Advances', 'blog-2-deep-learning-advances', '2025-04-02', 'Recent advancements in deep learning.'),
+        ('Computer Vision Techniques', 'blog-3-computer-vision-techniques', '2025-04-03', 'Techniques used in computer vision.'),
+        ('Natural Language Processing', 'blog-4-natural-language-processing', '2025-04-04', 'Overview of NLP.'),
+        ('Building Robots', 'blog-5-building-robots', '2025-04-05', 'How to build functional robots.'),
+        ('Ethics in AI', 'blog-6-ethics-in-ai', '2025-04-06', 'Discussion on AI ethics.'),
+        ('Healthcare AI', 'blog-7-healthcare-ai', '2025-04-07', 'Using AI in healthcare.'),
+        ('Autonomous Vehicles', 'blog-8-autonomous-vehicles', '2025-04-08', 'Self-driving car technologies.'),
+        ('Data Science Trends', 'blog-9-data-science-trends', '2025-04-09', 'Trends in data science.'),
+        ('AI in Daily Life', 'blog-10-ai-in-daily-life', '2025-04-10', 'Applications of AI in everyday life.')
     ]
+
     cursor.executemany('INSERT INTO blogs (title, slug, date_posted, content) VALUES (?, ?, ?, ?);', blogs)
 
     # Insert events
     events = [
-        ('AI Workshop', 'ai-workshop', '2025-05-10', 'A beginner-friendly workshop on AI.'),
-        ('ML Hackathon', 'ml-hackathon', '2025-05-20', 'A hackathon focused on ML solutions.'),
-        ('Deep Learning Summit', 'deep-learning-summit', '2025-06-15', 'Conference on deep learning research.'),
-        ('Robotics Expo', 'robotics-expo', '2025-07-01', 'Showcase of robotics projects.'),
-        ('Healthcare AI Conference', 'healthcare-ai-conference', '2025-07-20', 'AI applications in healthcare.'),
-        ('Data Science Bootcamp', 'data-science-bootcamp', '2025-08-05', 'Intensive data science training.'),
-        ('NLP Workshop', 'nlp-workshop', '2025-08-25', 'Workshop focused on NLP.'),
-        ('Automation Fair', 'automation-fair', '2025-09-10', 'Automation technologies exhibition.'),
-        ('Ethics Panel', 'ethics-panel', '2025-09-25', 'Panel discussion on AI ethics.'),
-        ('Vision Tech Expo', 'vision-tech-expo', '2025-10-05', 'Latest in computer vision tech.')
+        ('AI Workshop', 'event-1-ai-workshop', '2025-05-10', 'A beginner-friendly workshop on AI.'),
+        ('ML Hackathon', 'event-2-ml-hackathon', '2025-05-20', 'A hackathon focused on ML solutions.'),
+        ('Deep Learning Summit', 'event-3-deep-learning-summit', '2025-06-15', 'Conference on deep learning research.'),
+        ('Robotics Expo', 'event-4-robotics-expo', '2025-07-01', 'Showcase of robotics projects.'),
+        ('Healthcare AI Conference', 'event-5-healthcare-ai-conference', '2025-07-20', 'AI applications in healthcare.'),
+        ('Data Science Bootcamp', 'event-6-data-science-bootcamp', '2025-08-05', 'Intensive data science training.'),
+        ('NLP Workshop', 'event-7-nlp-workshop', '2025-08-25', 'Workshop focused on NLP.'),
+        ('Automation Fair', 'event-8-automation-fair', '2025-09-10', 'Automation technologies exhibition.'),
+        ('Ethics Panel', 'event-9-ethics-panel', '2025-09-25', 'Panel discussion on AI ethics.'),
+        ('Vision Tech Expo', 'event-10-vision-tech-expo', '2025-10-05', 'Latest in computer vision tech.')
     ]
+
     cursor.executemany('INSERT INTO events (title, slug, event_date, content) VALUES (?, ?, ?, ?);', events)
 
     # Insert projects
     projects = [
-        ('AI Chatbot', 'ai-chatbot', '2025-03-01', 'An AI-powered chatbot project.'),
-        ('Self-driving Car Prototype', 'self-driving-car-prototype', '2025-03-10', 'Prototype of a self-driving car.'),
-        ('Face Recognition System', 'face-recognition-system', '2025-03-20', 'Face recognition security system.'),
-        ('NLP Summarizer', 'nlp-summarizer', '2025-03-30', 'Text summarization tool.'),
-        ('Healthcare Diagnosis AI', 'healthcare-diagnosis-ai', '2025-04-05', 'AI for diagnosing diseases.'),
-        ('Warehouse Robot', 'warehouse-robot', '2025-04-10', 'Autonomous warehouse robot.'),
-        ('Data Science Platform', 'data-science-platform', '2025-04-15', 'Integrated data science platform.'),
-        ('Autonomous Drone', 'autonomous-drone', '2025-04-20', 'Drone with auto-navigation.'),
-        ('Medical Imaging AI', 'medical-imaging-ai', '2025-04-25', 'AI for analyzing medical images.'),
-        ('AI Financial Advisor', 'ai-financial-advisor', '2025-04-30', 'Personal finance assistant AI.')
+        ('AI Chatbot', 'project-1-ai-chatbot', '2025-03-01', 'An AI-powered chatbot project.'),
+        ('Self-driving Car Prototype', 'project-2-self-driving-car-prototype', '2025-03-10', 'Prototype of a self-driving car.'),
+        ('Face Recognition System', 'project-3-face-recognition-system', '2025-03-20', 'Face recognition security system.'),
+        ('NLP Summarizer', 'project-4-nlp-summarizer', '2025-03-30', 'Text summarization tool.'),
+        ('Healthcare Diagnosis AI', 'project-5-healthcare-diagnosis-ai', '2025-04-05', 'AI for diagnosing diseases.'),
+        ('Warehouse Robot', 'project-6-warehouse-robot', '2025-04-10', 'Autonomous warehouse robot.'),
+        ('Data Science Platform', 'project-7-data-science-platform', '2025-04-15', 'Integrated data science platform.'),
+        ('Autonomous Drone', 'project-8-autonomous-drone', '2025-04-20', 'Drone with auto-navigation.'),
+        ('Medical Imaging AI', 'project-9-medical-imaging-ai', '2025-04-25', 'AI for analyzing medical images.'),
+        ('AI Financial Advisor', 'project-10-ai-financial-advisor', '2025-04-30', 'Personal finance assistant AI.')
     ]
+
     cursor.executemany('INSERT INTO projects (title, slug, date_posted, content) VALUES (?, ?, ?, ?);', projects)
 
     # Link blogs to random tags
