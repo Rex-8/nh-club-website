@@ -29,10 +29,8 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             slug TEXT UNIQUE NOT NULL,
-            author_id INTEGER,
             date_posted TEXT,
-            content TEXT NOT NULL,
-            FOREIGN KEY (author_id) REFERENCES authors(id)
+            content TEXT NOT NULL
         );
     ''')
 
