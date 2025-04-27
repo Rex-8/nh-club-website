@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tags</title>
+</head>
+<body>
+    <h1>All Tags</h1>
+
+    <h3>Tags:</h3>
+    <ul>
+        {% for tag in tags %}
+            <li>
+                <a href="{{ url_for('view_tag', id=tag['id']) }}">{{ tag['name'] }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="/">Back to home</a>
+</body>
+</html>

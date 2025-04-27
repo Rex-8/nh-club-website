@@ -60,6 +60,54 @@ def view_member(id):
 
     return render_template('view_member.html', member=member, blogs=blogs, events=events, projects=projects)
 
+@app.route('/tags')
+def list_tags():
+    conn = get_db_connection()
+    
+    # Fetch all tags
+    tags = conn.execute('SELECT * FROM tags').fetchall()
+    
+    conn.close()
+    return render_template('tags.html', tags=tags)
+
+@app.route('/tags/<int:id>')
+def view_tag(id):
+    conn = get_db_connection()
+    
+    # Fetch tag details
+    tag = conn.execute('SELECT * FROM tags WHERE id = ?', (id,)).fetchone()
+    
+    # Fetch associated blogs
+    blogs = conn.execute('''
+        SELECT b.title, b.slug, b.date_posted
+        FROM blogs b
+        JOIN blog_tags bt ON bt.blog_id = b.id
+        WHERE bt.tag_id = ?
+    ''', (id,)).fetchall()
+
+    # Fetch associated events
+    events = conn.execute('''
+        SELECT e.title, e.slug, e.event_date
+        FROM events e
+        JOIN event_tags et ON et.event_id = e.id
+        WHERE et.tag_id = ?
+    ''', (id,)).fetchall()
+
+    # Fetch associated projects
+    projects = conn.execute('''
+        SELECT p.title, p.slug, p.date_posted
+        FROM projects p
+        JOIN project_tags pt ON pt.project_id = p.id
+        WHERE pt.tag_id = ?
+    ''', (id,)).fetchall()
+    
+    conn.close()
+    
+    if tag is None:
+        return "Tag not found", 404
+    
+    return render_template('view_tags.html', tag=tag, blogs=blogs, events=events, projects=projects)
+
 @app.route('/blogs')
 def list_blogs():
     conn = get_db_connection()
@@ -78,7 +126,7 @@ def view_blog(slug):
 
     # Fetch tags for the blog
     tags = conn.execute('''
-        SELECT tags.name FROM tags
+        SELECT tags.id, tags.name FROM tags
         JOIN blog_tags ON blog_tags.tag_id = tags.id
         JOIN blogs ON blogs.id = blog_tags.blog_id
         WHERE blogs.slug = ?
@@ -121,7 +169,7 @@ def view_project(slug):
 
     # Fetch tags for the project
     tags = conn.execute('''
-        SELECT tags.name FROM tags
+        SELECT tags.id, tags.name FROM tags
         JOIN project_tags ON project_tags.tag_id = tags.id
         JOIN projects ON projects.id = project_tags.project_id
         WHERE projects.slug = ?
@@ -163,7 +211,7 @@ def view_event(slug):
     
     # Extract tags related to this event (if applicable)
     tags = conn.execute('''
-        SELECT t.name FROM tags t 
+        SELECT t.id, t.name FROM tags t 
         JOIN event_tags et ON t.id = et.tag_id 
         WHERE et.event_id = ?
     ''', (event['id'],)).fetchall()
