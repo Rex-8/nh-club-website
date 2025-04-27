@@ -33,6 +33,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS blogs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
+            thumbnail TEXT NOT NULL,
             slug TEXT UNIQUE NOT NULL,
             date_posted TEXT,
             content TEXT NOT NULL
@@ -44,6 +45,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
+            thumbnail TEXT NOT NULL,
             slug TEXT UNIQUE NOT NULL,
             event_date TEXT,
             content TEXT NOT NULL
@@ -55,6 +57,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS projects (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
+            thumbnail TEXT NOT NULL,
             slug TEXT UNIQUE NOT NULL,
             date_posted TEXT,
             content TEXT NOT NULL
