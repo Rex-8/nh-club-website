@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members</title>
+</head>
+<body>
+    <h1>Club Members</h1>
+    
+    <h2>Heads of the Club</h2>
+    <ul>
+        {% for head in heads %}
+            <li><a href="/member/{{ head['id'] }}">{{ head['name'] }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Normal Members</h2>
+    <ul>
+        {% for member in members %}
+            <li><a href="/member/{{ member['id'] }}">{{ member['name'] }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -14,6 +14,52 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/members')
+def list_members():
+    conn = get_db_connection()
+
+    # Fetch all members
+    members = conn.execute('SELECT * FROM members').fetchall()
+    
+    conn.close()
+    return render_template('members.html', members=members)
+
+@app.route('/member/<int:id>')
+def view_member(id):
+    conn = get_db_connection()
+
+    # Fetch member details
+    member = conn.execute('SELECT * FROM members WHERE id = ?', (id,)).fetchone()
+
+    # Fetch member's works (blogs, events, and projects)
+    blogs = conn.execute('''
+        SELECT b.title, b.slug, b.date_posted
+        FROM blogs b
+        JOIN blog_authors ba ON ba.blog_id = b.id
+        WHERE ba.member_id = ?
+    ''', (id,)).fetchall()
+
+    events = conn.execute('''
+        SELECT e.title, e.slug, e.event_date
+        FROM events e
+        JOIN event_authors ea ON ea.event_id = e.id
+        WHERE ea.member_id = ?
+    ''', (id,)).fetchall()
+
+    projects = conn.execute('''
+        SELECT p.title, p.slug, p.date_posted
+        FROM projects p
+        JOIN project_authors pa ON pa.project_id = p.id
+        WHERE pa.member_id = ?
+    ''', (id,)).fetchall()
+
+    conn.close()
+
+    if member is None:
+        return "Member not found", 404
+
+    return render_template('view_member.html', member=member, blogs=blogs, events=events, projects=projects)
+
 @app.route('/blogs')
 def list_blogs():
     conn = get_db_connection()
