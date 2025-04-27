@@ -14,9 +14,9 @@ def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Create authors table
+    # Create members table (formerly authors table)
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS authors (
+        CREATE TABLE IF NOT EXISTS members (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             bio TEXT
@@ -97,36 +97,69 @@ def init_db():
         );
     ''')
 
-    # Create blog_authors link table (many-to-many relation between blogs and authors)
+    # Create blog_authors link table (many-to-many relation between blogs and members)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS blog_authors (
             blog_id INTEGER,
-            author_id INTEGER,
+            member_id INTEGER,
             FOREIGN KEY (blog_id) REFERENCES blogs(id),
-            FOREIGN KEY (author_id) REFERENCES authors(id),
-            PRIMARY KEY (blog_id, author_id)
+            FOREIGN KEY (member_id) REFERENCES members(id),
+            PRIMARY KEY (blog_id, member_id)
         );
     ''')
 
-    # Create event_authors link table (many-to-many relation between events and authors)
+    # Create event_authors link table (many-to-many relation between events and members)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS event_authors (
             event_id INTEGER,
-            author_id INTEGER,
+            member_id INTEGER,
             FOREIGN KEY (event_id) REFERENCES events(id),
-            FOREIGN KEY (author_id) REFERENCES authors(id),
-            PRIMARY KEY (event_id, author_id)
+            FOREIGN KEY (member_id) REFERENCES members(id),
+            PRIMARY KEY (event_id, member_id)
         );
     ''')
 
-    # Create project_authors link table (many-to-many relation between projects and authors)
+    # Create project_authors link table (many-to-many relation between projects and members)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS project_authors (
             project_id INTEGER,
-            author_id INTEGER,
+            member_id INTEGER,
             FOREIGN KEY (project_id) REFERENCES projects(id),
-            FOREIGN KEY (author_id) REFERENCES authors(id),
-            PRIMARY KEY (project_id, author_id)
+            FOREIGN KEY (member_id) REFERENCES members(id),
+            PRIMARY KEY (project_id, member_id)
+        );
+    ''')
+
+    # Create assist_blog table (many-to-many relation between blogs and assistants)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS assist_blog (
+            blog_id INTEGER,
+            member_id INTEGER,
+            FOREIGN KEY (blog_id) REFERENCES blogs(id),
+            FOREIGN KEY (member_id) REFERENCES members(id),
+            PRIMARY KEY (blog_id, member_id)
+        );
+    ''')
+
+    # Create assist_event table (many-to-many relation between events and assistants)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS assist_event (
+            event_id INTEGER,
+            member_id INTEGER,
+            FOREIGN KEY (event_id) REFERENCES events(id),
+            FOREIGN KEY (member_id) REFERENCES members(id),
+            PRIMARY KEY (event_id, member_id)
+        );
+    ''')
+
+    # Create assist_project table (many-to-many relation between projects and assistants)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS assist_project (
+            project_id INTEGER,
+            member_id INTEGER,
+            FOREIGN KEY (project_id) REFERENCES projects(id),
+            FOREIGN KEY (member_id) REFERENCES members(id),
+            PRIMARY KEY (project_id, member_id)
         );
     ''')
 

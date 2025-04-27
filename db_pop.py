@@ -13,8 +13,8 @@ def populate_dummy_data():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Insert authors
-    authors = [
+    # Insert members (authors and assistants)
+    members = [
         ('Alice Smith', 'Machine Learning specialist.'),
         ('Bob Johnson', 'Data Scientist and AI enthusiast.'),
         ('Charlie Brown', 'Deep Learning researcher.'),
@@ -26,7 +26,7 @@ def populate_dummy_data():
         ('Ian Cook', 'Autonomous Systems developer.'),
         ('Jane Foster', 'Medical Imaging expert.')
     ]
-    cursor.executemany('INSERT INTO authors (name, bio) VALUES (?, ?);', authors)
+    cursor.executemany('INSERT INTO members (name, bio) VALUES (?, ?);', members)
 
     # Insert tags
     tags = [
@@ -49,7 +49,6 @@ def populate_dummy_data():
         ('Data Science Trends', 'blog-9-data-science-trends', '2025-04-09', 'Trends in data science.'),
         ('AI in Daily Life', 'blog-10-ai-in-daily-life', '2025-04-10', 'Applications of AI in everyday life.')
     ]
-
     cursor.executemany('INSERT INTO blogs (title, slug, date_posted, content) VALUES (?, ?, ?, ?);', blogs)
 
     # Insert events
@@ -65,7 +64,6 @@ def populate_dummy_data():
         ('Ethics Panel', 'event-9-ethics-panel', '2025-09-25', 'Panel discussion on AI ethics.'),
         ('Vision Tech Expo', 'event-10-vision-tech-expo', '2025-10-05', 'Latest in computer vision tech.')
     ]
-
     cursor.executemany('INSERT INTO events (title, slug, event_date, content) VALUES (?, ?, ?, ?);', events)
 
     # Insert projects
@@ -81,7 +79,6 @@ def populate_dummy_data():
         ('Medical Imaging AI', 'project-9-medical-imaging-ai', '2025-04-25', 'AI for analyzing medical images.'),
         ('AI Financial Advisor', 'project-10-ai-financial-advisor', '2025-04-30', 'Personal finance assistant AI.')
     ]
-
     cursor.executemany('INSERT INTO projects (title, slug, date_posted, content) VALUES (?, ?, ?, ?);', projects)
 
     # Link blogs to random tags
@@ -102,23 +99,41 @@ def populate_dummy_data():
         for tag_id in tag_ids:
             cursor.execute('INSERT INTO project_tags (project_id, tag_id) VALUES (?, ?);', (project_id, tag_id))
 
-    # Link blogs to random authors
+    # Link blogs to random authors (members)
     for blog_id in range(1, 11):
-        author_ids = random.sample(range(1, 11), 2)  # Select 2 random authors
-        for author_id in author_ids:
-            cursor.execute('INSERT INTO blog_authors (blog_id, author_id) VALUES (?, ?);', (blog_id, author_id))
+        member_ids = random.sample(range(1, 11), 2)  # Select 2 random members
+        for member_id in member_ids:
+            cursor.execute('INSERT INTO blog_authors (blog_id, member_id) VALUES (?, ?);', (blog_id, member_id))
 
-    # Link events to random authors
+    # Link events to random authors (members)
     for event_id in range(1, 11):
-        author_ids = random.sample(range(1, 11), 2)  # Select 2 random authors
-        for author_id in author_ids:
-            cursor.execute('INSERT INTO event_authors (event_id, author_id) VALUES (?, ?);', (event_id, author_id))
+        member_ids = random.sample(range(1, 11), 2)  # Select 2 random members
+        for member_id in member_ids:
+            cursor.execute('INSERT INTO event_authors (event_id, member_id) VALUES (?, ?);', (event_id, member_id))
 
-    # Link projects to random authors
+    # Link projects to random authors (members)
     for project_id in range(1, 11):
-        author_ids = random.sample(range(1, 11), 2)  # Select 2 random authors
-        for author_id in author_ids:
-            cursor.execute('INSERT INTO project_authors (project_id, author_id) VALUES (?, ?);', (project_id, author_id))
+        member_ids = random.sample(range(1, 11), 2)  # Select 2 random members
+        for member_id in member_ids:
+            cursor.execute('INSERT INTO project_authors (project_id, member_id) VALUES (?, ?);', (project_id, member_id))
+
+    # Link blogs to random assistants (members)
+    for blog_id in range(1, 11):
+        member_ids = random.sample(range(1, 11), 2)  # Select 2 random assistants
+        for member_id in member_ids:
+            cursor.execute('INSERT INTO assist_blog (blog_id, member_id) VALUES (?, ?);', (blog_id, member_id))
+
+    # Link events to random assistants (members)
+    for event_id in range(1, 11):
+        member_ids = random.sample(range(1, 11), 2)  # Select 2 random assistants
+        for member_id in member_ids:
+            cursor.execute('INSERT INTO assist_event (event_id, member_id) VALUES (?, ?);', (event_id, member_id))
+
+    # Link projects to random assistants (members)
+    for project_id in range(1, 11):
+        member_ids = random.sample(range(1, 11), 2)  # Select 2 random assistants
+        for member_id in member_ids:
+            cursor.execute('INSERT INTO assist_project (project_id, member_id) VALUES (?, ?);', (project_id, member_id))
 
     conn.commit()
     conn.close()
