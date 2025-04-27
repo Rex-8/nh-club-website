@@ -1,0 +1,16 @@
+<!-- templates/projects.html -->
+{% extends 'base.html' %}
+
+{% block title %}Projects | NH Club{% endblock %}
+
+{% block content %}
+<h1>Our Projects</h1>
+
+<ul>
+    {% for project in projects %}
+        <li><a href="{{ url_for('view_project', slug=project['slug']) }}">{{ project['title'] }} - {{ project['date_posted'] }}</a></li>
+    {% else %}
+        <p>No projects available.</p>
+    {% endfor %}
+</ul>
+{% endblock %}

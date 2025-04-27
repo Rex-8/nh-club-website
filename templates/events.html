@@ -1,0 +1,16 @@
+<!-- templates/events.html -->
+{% extends 'base.html' %}
+
+{% block title %}Events | NH Club{% endblock %}
+
+{% block content %}
+<h1>Upcoming Events</h1>
+
+<ul>
+    {% for event in events %}
+        <li><a href="{{ url_for('view_event', slug=event['slug']) }}">{{ event['title'] }} - {{ event['event_date'] }}</a></li>
+    {% else %}
+        <p>No events scheduled.</p>
+    {% endfor %}
+</ul>
+{% endblock %}
