@@ -8,7 +8,9 @@
 <body>
     <h1>{{ project['title'] }}</h1>
     <p><strong>Posted on:</strong> {{ project['date_posted'] }}</p>
-    <p>{{ project['content'] }}</p>
+    <div>
+        {{ project['content']|safe }}
+    </div>
 
     <h3>Authors:</h3>
     <ul>

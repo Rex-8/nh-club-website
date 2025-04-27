@@ -1,10 +1,14 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,send_from_directory
 from utils.db_utils import init_db, get_db_connection
 
 app = Flask(__name__)
 
 # Initialize the database
 init_db()
+
+@app.route('/content/<path:filename>')
+def content_static(filename):
+    return send_from_directory('content', filename)
 
 @app.route('/')
 def home():

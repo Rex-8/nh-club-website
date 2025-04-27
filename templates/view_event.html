@@ -8,7 +8,9 @@
 <body>
     <h1>{{ event['title'] }}</h1>
     <p><strong>Event Date:</strong> {{ event['event_date'] }}</p>
-    <p>{{ event['content'] }}</p>
+    <div>
+        {{ event['content']|safe }}
+    </div>
 
     <h3>Authors:</h3>
     <ul>
