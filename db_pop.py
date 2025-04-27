@@ -15,18 +15,22 @@ def populate_dummy_data():
 
     # Insert members (authors and assistants)
     members = [
-        ('Alice Smith', 'Machine Learning specialist.'),
-        ('Bob Johnson', 'Data Scientist and AI enthusiast.'),
-        ('Charlie Brown', 'Deep Learning researcher.'),
-        ('Diana Prince', 'Computer Vision expert.'),
-        ('Evan Wright', 'Robotics engineer.'),
-        ('Fiona Lee', 'NLP specialist.'),
-        ('George Harris', 'Data Engineer and Analyst.'),
-        ('Hannah Adams', 'AI Ethics researcher.'),
-        ('Ian Cook', 'Autonomous Systems developer.'),
-        ('Jane Foster', 'Medical Imaging expert.')
+        ('Alice Smith', 'Machine Learning specialist.', 'https://linkedin.com/in/alice-smith', 'https://aliceportfolio.com', 'https://github.com/alice-smith', 2020, 2024),
+        ('Bob Johnson', 'Data Scientist and AI enthusiast.', 'https://linkedin.com/in/bob-johnson', 'https://bobportfolio.com', 'https://github.com/bob-johnson', 2021, 2025),
+        ('Charlie Brown', 'Deep Learning researcher.', 'https://linkedin.com/in/charlie-brown', 'https://charlieportfolio.com', 'https://github.com/charlie-brown', 2020, 2023),
+        ('Diana Prince', 'Computer Vision expert.', 'https://linkedin.com/in/diana-prince', 'https://dianaportfolio.com', 'https://github.com/diana-prince', 2022, 2025),
+        ('Evan Wright', 'Robotics engineer.', 'https://linkedin.com/in/evan-wright', 'https://evanportfolio.com', 'https://github.com/evan-wright', 2021, 2024),
+        ('Fiona Lee', 'NLP specialist.', 'https://linkedin.com/in/fiona-lee', 'https://fionaportfolio.com', 'https://github.com/fiona-lee', 2020, 2023),
+        ('George Harris', 'Data Engineer and Analyst.', 'https://linkedin.com/in/george-harris', 'https://georgeportfolio.com', 'https://github.com/george-harris', 2021, 2025),
+        ('Hannah Adams', 'AI Ethics researcher.', 'https://linkedin.com/in/hannah-adams', 'https://hannahportfolio.com', 'https://github.com/hannah-adams', 2022, 2025),
+        ('Ian Cook', 'Autonomous Systems developer.', 'https://linkedin.com/in/ian-cook', 'https://ianportfolio.com', 'https://github.com/ian-cook', 2020, 2024),
+        ('Jane Foster', 'Medical Imaging expert.', 'https://linkedin.com/in/jane-foster', 'https://janesportfolio.com', 'https://github.com/jane-foster', 2021, 2024)
     ]
-    cursor.executemany('INSERT INTO members (name, bio) VALUES (?, ?);', members)
+
+    cursor.executemany('''
+        INSERT INTO members (name, bio, linkedin_url, portfolio_url, github_url, join_year, exit_year)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
+    ''', members)
 
     # Insert tags
     tags = [
