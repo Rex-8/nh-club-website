@@ -102,6 +102,24 @@ def populate_dummy_data():
         for tag_id in tag_ids:
             cursor.execute('INSERT INTO project_tags (project_id, tag_id) VALUES (?, ?);', (project_id, tag_id))
 
+    # Link blogs to random authors
+    for blog_id in range(1, 11):
+        author_ids = random.sample(range(1, 11), 2)  # Select 2 random authors
+        for author_id in author_ids:
+            cursor.execute('INSERT INTO blog_authors (blog_id, author_id) VALUES (?, ?);', (blog_id, author_id))
+
+    # Link events to random authors
+    for event_id in range(1, 11):
+        author_ids = random.sample(range(1, 11), 2)  # Select 2 random authors
+        for author_id in author_ids:
+            cursor.execute('INSERT INTO event_authors (event_id, author_id) VALUES (?, ?);', (event_id, author_id))
+
+    # Link projects to random authors
+    for project_id in range(1, 11):
+        author_ids = random.sample(range(1, 11), 2)  # Select 2 random authors
+        for author_id in author_ids:
+            cursor.execute('INSERT INTO project_authors (project_id, author_id) VALUES (?, ?);', (project_id, author_id))
+
     conn.commit()
     conn.close()
     print("✅ Dummy data inserted successfully!")
