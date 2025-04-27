@@ -21,10 +21,14 @@ def list_blogs():
     conn.close()
     return render_template('blogs.html', blogs=blogs)
 
+# View individual blog
 @app.route('/blogs/<slug>')
 def view_blog(slug):
     conn = get_db_connection()
     blog = conn.execute('SELECT * FROM blogs WHERE slug = ?', (slug,)).fetchone()
+
+    if blog is None:
+        return "Blog not found", 404
 
     # Fetch tags for the blog
     tags = conn.execute('''
@@ -33,19 +37,25 @@ def view_blog(slug):
         JOIN blogs ON blogs.id = blog_tags.blog_id
         WHERE blogs.slug = ?
     ''', (slug,)).fetchall()
+
     # Fetch associated authors for the blog
     authors = conn.execute('''
-        SELECT authors.id, authors.name, authors.bio
-        FROM authors
-        JOIN blog_authors ON authors.id = blog_authors.author_id
+        SELECT members.id, members.name, members.bio
+        FROM members
+        JOIN blog_authors ON members.id = blog_authors.member_id
         WHERE blog_authors.blog_id = ?
     ''', (blog['id'],)).fetchall()
 
-    conn.close()
+    # Fetch assistants for the blog
+    assistants = conn.execute('''
+        SELECT members.id, members.name, members.bio
+        FROM members
+        JOIN assist_blog ON members.id = assist_blog.member_id
+        WHERE assist_blog.blog_id = ?
+    ''', (blog['id'],)).fetchall()
 
-    if blog is None:
-        return "Blog not found", 404
-    return render_template('view_blog.html', blog=blog, tags=tags,authors = authors)
+    conn.close()
+    return render_template('view_blog.html', blog=blog, tags=tags, authors=authors, assistants=assistants)
 
 @app.route('/projects')
 def list_projects():
@@ -60,6 +70,9 @@ def view_project(slug):
     conn = get_db_connection()
     project = conn.execute('SELECT * FROM projects WHERE slug = ?', (slug,)).fetchone()
 
+    if project is None:
+        return "Project not found", 404
+
     # Fetch tags for the project
     tags = conn.execute('''
         SELECT tags.name FROM tags
@@ -67,19 +80,25 @@ def view_project(slug):
         JOIN projects ON projects.id = project_tags.project_id
         WHERE projects.slug = ?
     ''', (slug,)).fetchall()
+
     # Fetch associated authors for the project
     authors = conn.execute('''
-        SELECT authors.id, authors.name, authors.bio
-        FROM authors
-        JOIN project_authors ON authors.id = project_authors.author_id
+        SELECT members.id, members.name, members.bio
+        FROM members
+        JOIN project_authors ON members.id = project_authors.member_id
         WHERE project_authors.project_id = ?
     ''', (project['id'],)).fetchall()
 
-    conn.close()
+    # Fetch assistants for the project
+    assistants = conn.execute('''
+        SELECT members.id, members.name, members.bio
+        FROM members
+        JOIN assist_project ON members.id = assist_project.member_id
+        WHERE assist_project.project_id = ?
+    ''', (project['id'],)).fetchall()
 
-    if project is None:
-        return "Project not found", 404
-    return render_template('view_project.html', project=project, tags=tags,authors = authors)
+    conn.close()
+    return render_template('view_project.html', project=project, tags=tags, authors=authors, assistants=assistants)
 
 @app.route('/events')
 def list_events():
@@ -95,16 +114,32 @@ def view_event(slug):
     event = conn.execute('SELECT * FROM events WHERE slug = ?', (slug,)).fetchone()
     if event is None:
         return "Event not found", 404
+    
     # Extract tags related to this event (if applicable)
-    tags = conn.execute('SELECT t.name FROM tags t JOIN event_tags et ON t.id = et.tag_id WHERE et.event_id = ?', (event['id'],)).fetchall()
+    tags = conn.execute('''
+        SELECT t.name FROM tags t 
+        JOIN event_tags et ON t.id = et.tag_id 
+        WHERE et.event_id = ?
+    ''', (event['id'],)).fetchall()
+
+    # Fetch authors for the event
     authors = conn.execute('''
-        SELECT authors.id, authors.name, authors.bio
-        FROM authors
-        JOIN event_authors ON authors.id = event_authors.author_id
+        SELECT members.id, members.name, members.bio
+        FROM members
+        JOIN event_authors ON members.id = event_authors.member_id
         WHERE event_authors.event_id = ?
     ''', (event['id'],)).fetchall()
+
+    # Fetch assistants for the event
+    assistants = conn.execute('''
+        SELECT members.id, members.name, members.bio
+        FROM members
+        JOIN assist_event ON members.id = assist_event.member_id
+        WHERE assist_event.event_id = ?
+    ''', (event['id'],)).fetchall()
+
     conn.close()
-    return render_template('view_event.html', event=event, tags=tags,authors = authors)
+    return render_template('view_event.html', event=event, tags=tags, authors=authors, assistants=assistants)
 
 if __name__ == '__main__':
     app.run(debug=True)

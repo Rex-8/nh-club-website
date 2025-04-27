@@ -17,6 +17,13 @@
         {% endfor %}
     </ul>
 
+    <h3>Assistants:</h3>
+    <ul>
+        {% for assistant in assistants %}
+            <li><strong>{{ assistant['name'] }}</strong><br>{{ assistant['bio'] }}</li>
+        {% endfor %}
+    </ul>
+
     <h3>Tags:</h3>
     <ul>
         {% for tag in tags %}
