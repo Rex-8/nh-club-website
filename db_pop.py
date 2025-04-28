@@ -13,23 +13,23 @@ def populate_dummy_data():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Insert members (authors and assistants)
+    # Insert members (authors and assistants) with hardcoded profile_pic field
     members = [
-        ('Alice Smith', 'Machine Learning specialist.', 'https://linkedin.com/in/alice-smith', 'https://aliceportfolio.com', 'https://github.com/alice-smith', 2020, 2024),
-        ('Bob Johnson', 'Data Scientist and AI enthusiast.', 'https://linkedin.com/in/bob-johnson', 'https://bobportfolio.com', 'https://github.com/bob-johnson', 2021, 2025),
-        ('Charlie Brown', 'Deep Learning researcher.', 'https://linkedin.com/in/charlie-brown', 'https://charlieportfolio.com', 'https://github.com/charlie-brown', 2020, 2023),
-        ('Diana Prince', 'Computer Vision expert.', 'https://linkedin.com/in/diana-prince', 'https://dianaportfolio.com', 'https://github.com/diana-prince', 2022, 2025),
-        ('Evan Wright', 'Robotics engineer.', 'https://linkedin.com/in/evan-wright', 'https://evanportfolio.com', 'https://github.com/evan-wright', 2021, 2024),
-        ('Fiona Lee', 'NLP specialist.', 'https://linkedin.com/in/fiona-lee', 'https://fionaportfolio.com', 'https://github.com/fiona-lee', 2020, 2023),
-        ('George Harris', 'Data Engineer and Analyst.', 'https://linkedin.com/in/george-harris', 'https://georgeportfolio.com', 'https://github.com/george-harris', 2021, 2025),
-        ('Hannah Adams', 'AI Ethics researcher.', 'https://linkedin.com/in/hannah-adams', 'https://hannahportfolio.com', 'https://github.com/hannah-adams', 2022, 2025),
-        ('Ian Cook', 'Autonomous Systems developer.', 'https://linkedin.com/in/ian-cook', 'https://ianportfolio.com', 'https://github.com/ian-cook', 2020, 2024),
-        ('Jane Foster', 'Medical Imaging expert.', 'https://linkedin.com/in/jane-foster', 'https://janesportfolio.com', 'https://github.com/jane-foster', 2021, 2024)
+        ('Alice Smith', 'member-images/member-1-profile-pic.jpg', 'Machine Learning specialist.', 'https://linkedin.com/in/alice-smith', 'https://aliceportfolio.com', 'https://github.com/alice-smith', 2020, 2024),
+        ('Bob Johnson', 'member-images/member-2-profile-pic.jpg', 'Data Scientist and AI enthusiast.', 'https://linkedin.com/in/bob-johnson', 'https://bobportfolio.com', 'https://github.com/bob-johnson', 2021, 2025),
+        ('Charlie Brown', 'member-images/member-3-profile-pic.jpg', 'Deep Learning researcher.', 'https://linkedin.com/in/charlie-brown', 'https://charlieportfolio.com', 'https://github.com/charlie-brown', 2020, 2023),
+        ('Diana Prince', 'member-images/member-4-profile-pic.jpg', 'Computer Vision expert.', 'https://linkedin.com/in/diana-prince', 'https://dianaportfolio.com', 'https://github.com/diana-prince', 2022, 2025),
+        ('Evan Wright', 'member-images/member-5-profile-pic.jpg', 'Robotics engineer.', 'https://linkedin.com/in/evan-wright', 'https://evanportfolio.com', 'https://github.com/evan-wright', 2021, 2024),
+        ('Fiona Lee', 'member-images/member-6-profile-pic.jpg', 'NLP specialist.', 'https://linkedin.com/in/fiona-lee', 'https://fionaportfolio.com', 'https://github.com/fiona-lee', 2020, 2023),
+        ('George Harris', 'member-images/member-7-profile-pic.jpg', 'Data Engineer and Analyst.', 'https://linkedin.com/in/george-harris', 'https://georgeportfolio.com', 'https://github.com/george-harris', 2021, 2025),
+        ('Hannah Adams', 'member-images/member-8-profile-pic.jpg', 'AI Ethics researcher.', 'https://linkedin.com/in/hannah-adams', 'https://hannahportfolio.com', 'https://github.com/hannah-adams', 2022, 2025),
+        ('Ian Cook', 'member-images/member-9-profile-pic.jpg', 'Autonomous Systems developer.', 'https://linkedin.com/in/ian-cook', 'https://ianportfolio.com', 'https://github.com/ian-cook', 2020, 2024),
+        ('Jane Foster', 'member-images/member-10-profile-pic.jpg', 'Medical Imaging expert.', 'https://linkedin.com/in/jane-foster', 'https://janesportfolio.com', 'https://github.com/jane-foster', 2021, 2024)
     ]
 
     cursor.executemany('''
-        INSERT INTO members (name, bio, linkedin_url, portfolio_url, github_url, join_year, exit_year)
-        VALUES (?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO members (name, profile_pic, bio, linkedin_url, portfolio_url, github_url, join_year, exit_year)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
     ''', members)
 
     # Insert tags

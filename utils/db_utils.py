@@ -16,15 +16,16 @@ def init_db():
 
     # Create members table (formerly authors table)
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS members (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        bio TEXT,
-        linkedin_url TEXT,
-        portfolio_url TEXT,
-        github_url TEXT,
-        join_year DATE,
-        exit_year DATE
+        CREATE TABLE IF NOT EXISTS members (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            profile_pic TEXT ,
+            bio TEXT,
+            linkedin_url TEXT,
+            portfolio_url TEXT,
+            github_url TEXT,
+            join_year DATE,
+            exit_year DATE
         );
     ''')
 
