@@ -1,51 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ member['name'] }}</title>
-</head>
-<body>
-    <h1>{{ member['name'] }}</h1>
-    
-    <p><strong>Bio:</strong> {{ member['bio'] }}</p>
+{% extends 'base.html' %}
 
-    <h3>Social Media Links:</h3>
-    <ul>
-        {% if member['linkedin_url'] %}
-            <li><a href="{{ member['linkedin_url'] }}" target="_blank">LinkedIn</a></li>
-        {% endif %}
-        {% if member['portfolio_url'] %}
-            <li><a href="{{ member['portfolio_url'] }}" target="_blank">Portfolio</a></li>
-        {% endif %}
-        {% if member['github_url'] %}
-            <li><a href="{{ member['github_url'] }}" target="_blank">GitHub</a></li>
-        {% endif %}
-    </ul>
+{% block title %}{{ member.name }} | NH Club{% endblock %}
 
-    <h3>Works:</h3>
+{% block content %}
+<h1>{{ member.name }}</h1>
+<p><strong>Bio:</strong> {{ member.bio }}</p>
 
-    <h4>Blogs:</h4>
-    <ul>
-        {% for blog in blogs %}
-            <li><a href="/blogs/{{ blog['slug'] }}">{{ blog['title'] }} ({{ blog['date_posted'] }})</a></li>
-        {% endfor %}
-    </ul>
+<h3>Social Media Links:</h3>
+<ul>
+    {% if member.linkedin_url %}
+        <li><a href="{{ member.linkedin_url }}" target="_blank">LinkedIn</a></li>
+    {% endif %}
+    {% if member.portfolio_url %}
+        <li><a href="{{ member.portfolio_url }}" target="_blank">Portfolio</a></li>
+    {% endif %}
+    {% if member.github_url %}
+        <li><a href="{{ member.github_url }}" target="_blank">GitHub</a></li>
+    {% endif %}
+</ul>
 
-    <h4>Events:</h4>
-    <ul>
-        {% for event in events %}
-            <li><a href="/events/{{ event['slug'] }}">{{ event['title'] }} ({{ event['event_date'] }})</a></li>
-        {% endfor %}
-    </ul>
+<h3>Works:</h3>
 
-    <h4>Projects:</h4>
-    <ul>
-        {% for project in projects %}
-            <li><a href="/projects/{{ project['slug'] }}">{{ project['title'] }} ({{ project['date_posted'] }})</a></li>
-        {% endfor %}
-    </ul>
+<h4>Blogs:</h4>
+<ul>
+    {% for blog in blogs %}
+        <li><a href="{{ url_for('view_blog', slug=blog.slug) }}">{{ blog.title }} ({{ blog.date_posted }})</a></li>
+    {% endfor %}
+</ul>
 
-    <a href="/members">Back to Members</a>
-</body>
-</html>
+<h4>Events:</h4>
+<ul>
+    {% for event in events %}
+        <li><a href="{{ url_for('view_event', slug=event.slug) }}">{{ event.title }} ({{ event.event_date }})</a></li>
+    {% endfor %}
+</ul>
+
+<h4>Projects:</h4>
+<ul>
+    {% for project in projects %}
+        <li><a href="{{ url_for('view_project', slug=project.slug) }}">{{ project.title }} ({{ project.date_posted }})</a></li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('list_members') }}">Back to Members</a>
+{% endblock %}

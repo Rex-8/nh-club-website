@@ -1,35 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ tag['name'] }}</title>
-</head>
-<body>
-    <h1>{{ tag['name'] }}</h1>
-    <p><strong>Description:</strong> {{ tag['description'] }}</p>
+{% extends 'base.html' %}
 
-    <h3>Associated Blogs:</h3>
-    <ul>
-        {% for blog in blogs %}
-            <li><a href="/blogs/{{ blog.slug }}">{{ blog.title }}</a></li>
-        {% endfor %}
-    </ul>
+{% block title %}{{ tag.name }} | NH Club{% endblock %}
 
-    <h3>Associated Events:</h3>
-    <ul>
-        {% for event in events %}
-            <li><a href="/events/{{ event.slug }}">{{ event.title }}</a></li>
-        {% endfor %}
-    </ul>
+{% block content %}
+<h1>{{ tag.name }}</h1>
+<p><strong>Description:</strong> {{ tag.description }}</p>
 
-    <h3>Associated Projects:</h3>
-    <ul>
-        {% for project in projects %}
-            <li><a href="/projects/{{ project.slug }}">{{ project.title }}</a></li>
-        {% endfor %}
-    </ul>
+<h3>Associated Blogs:</h3>
+<ul>
+    {% for blog in blogs %}
+        <li><a href="{{ url_for('view_blog', slug=blog.slug) }}">{{ blog.title }}</a></li>
+    {% endfor %}
+</ul>
 
-    <a href="/tags">Back to tags</a>
-</body>
-</html>
+<h3>Associated Events:</h3>
+<ul>
+    {% for event in events %}
+        <li><a href="{{ url_for('view_event', slug=event.slug) }}">{{ event.title }}</a></li>
+    {% endfor %}
+</ul>
+
+<h3>Associated Projects:</h3>
+<ul>
+    {% for project in projects %}
+        <li><a href="{{ url_for('view_project', slug=project.slug) }}">{{ project.title }}</a></li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('list_tags') }}">Back to tags</a>
+{% endblock %}

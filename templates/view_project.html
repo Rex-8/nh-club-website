@@ -1,38 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ project['title'] }}</title>
-</head>
-<body>
-    <h1>{{ project['title'] }}</h1>
-    <p><strong>Posted on:</strong> {{ project['date_posted'] }}</p>
-    <div>
-        {{ project['content']|safe }}
-    </div>
+{% extends 'base.html' %}
 
-    <h3>Authors:</h3>
-    <ul>
-        {% for author in authors %}
-            <a href="{{ url_for('view_member', id=author['id']) }}">{{ author['name'] }}</a>
-        {% endfor %}
-    </ul>
+{% block title %}{{ project.title }} | NH Club{% endblock %}
 
-    <h3>Assistants:</h3>
-    <ul>
-        {% for assistant in assistants %}
-            <a href="{{ url_for('view_member', id=assistant['id']) }}">{{ assistant['name'] }}</a>
-        {% endfor %}
-    </ul>
+{% block content %}
+<h1>{{ project.title }}</h1>
+<p><strong>Posted on:</strong> {{ project.date_posted }}</p>
 
-    <h3>Tags:</h3>
-    <ul>
-        {% for tag in tags %}
-            <li><a href="{{ url_for('view_tag', id=tag['id']) }}">{{ tag['name'] }}</a></li>
-        {% endfor %}
-    </ul>
+<div>
+    {{ project.content | safe }}
+</div>
 
-    <a href="/projects">Back to projects</a>
-</body>
-</html>
+<h3>Authors:</h3>
+<ul>
+    {% for author in authors %}
+        <li>
+            <a href="{{ url_for('view_member', id=author.id) }}">
+                {{ author.name }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<h3>Assistants:</h3>
+<ul>
+    {% for assistant in assistants %}
+        <li>
+            <a href="{{ url_for('view_member', id=assistant.id) }}">
+                {{ assistant.name }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<h3>Tags:</h3>
+<ul>
+    {% for tag in tags %}
+        <li>
+            <a href="{{ url_for('view_tag', id=tag.id) }}">
+                {{ tag.name }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('list_projects') }}">Back to projects</a>
+{% endblock %}

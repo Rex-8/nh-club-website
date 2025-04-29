@@ -8,15 +8,32 @@
 </head>
 <body>
 
-    <nav>
-        <a href="{{ url_for('home') }}">Home</a> |
-        <a href="{{ url_for('about') }}">About</a> |
-        <a href="{{ url_for('list_blogs') }}">Blogs</a> |
-        <a href="{{ url_for('list_projects') }}">Projects</a> |
-        <a href="{{ url_for('list_events') }}">Events</a> |
-        <a href="{{ url_for('list_members') }}">Members</a> |  <!-- Added Members -->
-        <a href="{{ url_for('list_tags') }}">Tags</a>  <!-- Added Tags -->
-    </nav>
+    <!-- Header: Logo | Navigation | Socials -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 20px;">
+        
+        <!-- Logo Block Placeholder -->
+        <div id="logo">
+            {% block logo %}
+            <h1>NH Club</h1>
+            {% endblock %}
+        </div>
+
+        <!-- Main Navigation -->
+        <nav style="flex-grow: 1; text-align: center;">
+            <a href="{{ url_for('home') }}">Home</a> |
+            <a href="{{ url_for('about') }}">About</a> |
+            <a href="{{ url_for('list_blogs') }}">Blogs</a> |
+            <a href="{{ url_for('list_projects') }}">Projects</a> |
+            <a href="{{ url_for('list_events') }}">Events</a>
+        </nav>
+
+        <!-- Social Media Links -->
+        <div id="social-media-nav" style="text-align: right;">
+            <a href="https://www.instagram.com/neuralhive/" target="_blank">Instagram</a> |
+            <a href="https://www.linkedin.com/company/neural-hive-pesu" target="_blank">LinkedIn</a> |
+            <a href="https://github.com/Rex-8/nh-club-website" target="_blank">GitHub</a>
+        </div>
+    </div>
 
     <hr>
 
