@@ -1,41 +1,36 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Members | NH Club</title>
+</head>
+<body>
+    <h1>Members</h1>
 
-{% block title %}List of Members | NH Club{% endblock %}
+    <a href="{{ url_for('admin.edit_member', id=None) }}">+ Add New Member</a>
 
-{% block content %}
-  <h1>Members</h1>
-  
-  <a href="{{ url_for('admin.edit_member', id=None) }}">+ Add New Member</a>
+    <ul>
+        {% for member in members %}
+            <li>
+                {{ member.name }}
+                {% if member.profile_pic %}
+                <div style="width: 60px; height: 60px; overflow: hidden; border-radius: 50%; margin-right: 15px;">
+                    <img src="{{ url_for('content_static', filename=member.profile_pic) }}"
+                        alt="{{ member.name }}"
+                        style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                {% endif %}
+                <a href="{{ url_for('admin.edit_member', id=member.id) }}">Edit</a>
 
-  <ul style="list-style: none; padding: 0; margin-top: 20px;">
-    {% for member in members %}
-      <li style="display: flex; align-items: center; margin-bottom: 15px;">
-        
-        {% if member.profile_pic %}
-          <div style="width: 60px; height: 60px; overflow: hidden; border-radius: 50%; margin-right: 15px;">
-            <img src="{{ url_for('content_static', filename=member.profile_pic) }}"
-                 alt="{{ member.name }}"
-                 style="width:100%; height:100%; object-fit:cover;">
-          </div>
-        {% endif %}
+                <form method="POST"
+                    action="{{ url_for('admin.delete_member', id=member.id) }}">
+                <button type="submit" onclick="return confirm('Delete this member?');">Delete</button>
+                </form>
 
-        <div style="flex-grow: 1;">
-          <strong>{{ member.name }}</strong>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-          <a href="{{ url_for('admin.edit_member', id=member.id) }}">Edit</a>
-          <form method="POST"
-                action="{{ url_for('admin.delete_member', id=member.id) }}"
-                style="display: inline;">
-            <button type="submit" onclick="return confirm('Delete this member?');">
-              Delete
-            </button>
-          </form>
-        </div>
-      </li>
-    {% else %}
-      <p>No members found.</p>
-    {% endfor %}
-  </ul>
-{% endblock %}
+            </li>
+        {% else %}
+            <li>No members found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,18 +1,21 @@
-{% extends 'base.html' %}
-
-{% block title %}List of Blogs | NH Club{% endblock %}
-
-{% block content %}
-  <h1>Blogs</h1>
-  
-  <ul>
-    {% for blog in blogs %}
-      <li>
-        <a href="{{ url_for('admin.edit_blog', id=blog.id) }}">{{ blog.title }}</a><br>
-        <small>Posted on: {{ blog.date_posted }}</small>
-      </li>
-    {% else %}
-      <li>No blogs found.</li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Blogs | NH Club</title>
+</head>
+<body>
+    <h1>Blogs</h1>
+    
+    <ul>
+        {% for blog in blogs %}
+            <li>
+                <a href="{{ url_for('admin.edit_blog', id=blog.id) }}">{{ blog.title }}</a><br>
+                <small>Posted on: {{ blog.date_posted }}</small>
+            </li>
+        {% else %}
+            <li>No blogs found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

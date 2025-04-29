@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ "Edit" if member else "Add" }} Member</title>
+</head>
+<body>
+    <h1>{{ "Edit" if member else "Add New" }} Member</h1>
+
+    <form method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="name" value="{{ member.name if member else '' }}" required><br><br>
+
+        <label>Profile Picture Filename:</label><br>
+        <input type="text" name="profile_pic" value="{{ member.profile_pic if member else '' }}"><br><br>
+
+        <label>Bio:</label><br>
+        <textarea name="bio">{{ member.bio if member else '' }}</textarea><br><br>
+
+        <label>LinkedIn URL:</label><br>
+        <input type="text" name="linkedin_url" value="{{ member.linkedin_url if member else '' }}"><br><br>
+
+        <label>Portfolio URL:</label><br>
+        <input type="text" name="portfolio_url" value="{{ member.portfolio_url if member else '' }}"><br><br>
+
+        <label>GitHub URL:</label><br>
+        <input type="text" name="github_url" value="{{ member.github_url if member else '' }}"><br><br>
+
+        <label>Join Year:</label><br>
+        <input type="text" name="join_year" value="{{ member.join_year if member else '' }}"><br><br>
+
+        <label>Exit Year:</label><br>
+        <input type="text" name="exit_year" value="{{ member.exit_year if member else '' }}"><br><br>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <p><a href="{{ url_for('admin.list_members') }}">Back to Members</a></p>
+</body>
+</html>

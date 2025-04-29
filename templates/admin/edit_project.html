@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ "Edit" if project else "Add" }} Project</title>
+</head>
+<body>
+    <h1>{{ "Edit" if project else "Add New" }} Project</h1>
+
+    <form method="POST">
+        <label>Title:</label><br>
+        <input type="text" name="title" value="{{ project.title if project else '' }}"><br><br>
+
+        <label>Thumbnail Filename:</label><br>
+        <input type="text" name="thumbnail" value="{{ project.thumbnail if project else '' }}"><br><br>
+
+        <label>Slug:</label><br>
+        <input type="text" name="slug" value="{{ project.slug if project else '' }}"><br><br>
+
+        <label>Date Posted:</label><br>
+        <input type="text" name="date_posted" value="{{ project.date_posted if project else '' }}"><br><br>
+
+        <label>Content:</label><br>
+        <textarea name="content">{{ project.content if project else '' }}</textarea><br><br>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <p><a href="{{ url_for('admin.list_projects') }}">Back to Projects</a></p>
+</body>
+</html>

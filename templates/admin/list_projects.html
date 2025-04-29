@@ -1,18 +1,21 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Projects | NH Club</title>
+</head>
+<body>
+    <h1>Projects</h1>
 
-{% block title %}List of Projects | NH Club{% endblock %}
-
-{% block content %}
-  <h1>Projects</h1>
-
-  <ul>
-    {% for project in projects %}
-      <li>
-        <a href="{{ url_for('admin.edit_project', id=project.id) }}">{{ project.title }}</a><br>
-        <small>Posted on: {{ project.date_posted }}</small>
-      </li>
-    {% else %}
-      <li>No projects found.</li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+    <ul>
+        {% for project in projects %}
+            <li>
+                <a href="{{ url_for('admin.edit_project', id=project.id) }}">{{ project.title }}</a><br>
+                <small>Posted on: {{ project.date_posted }}</small>
+            </li>
+        {% else %}
+            <li>No projects found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

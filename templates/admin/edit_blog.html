@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ "Edit" if blog else "Add" }} Blog</title>
+</head>
+<body>
+    <h1>{{ "Edit" if blog else "Add New" }} Blog</h1>
+
+    <form method="POST">
+        <label>Title:</label><br>
+        <input type="text" name="title" value="{{ blog.title if blog else '' }}"><br><br>
+
+        <label>Thumbnail Filename:</label><br>
+        <input type="text" name="thumbnail" value="{{ blog.thumbnail if blog else '' }}"><br><br>
+
+        <label>Slug:</label><br>
+        <input type="text" name="slug" value="{{ blog.slug if blog else '' }}"><br><br>
+
+        <label>Date Posted:</label><br>
+        <input type="text" name="date_posted" value="{{ blog.date_posted if blog else '' }}"><br><br>
+
+        <label>Content:</label><br>
+        <textarea name="content">{{ blog.content if blog else '' }}</textarea><br><br>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <p><a href="{{ url_for('admin.list_blogs') }}">Back to Blogs</a></p>
+</body>
+</html>

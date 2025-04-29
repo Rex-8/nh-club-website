@@ -1,14 +1,17 @@
-{% extends 'base.html' %}
-
-{% block title %}Admin Tables | NH Club{% endblock %}
-
-{% block content %}
-  <h1>Admin Tables</h1>
-  <ul style="list-style: none; padding: 0;">
-    {% for table in tables %}
-      <li style="margin-bottom: 10px;">
-        <a href="{{ table.url }}">{{ table.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Tables | NH Club</title>
+</head>
+<body>
+    <h1>Admin Tables</h1>
+    <ul>
+        {% for table in tables %}
+            <li>
+                <a href="{{ table.url }}">{{ table.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

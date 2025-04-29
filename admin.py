@@ -101,3 +101,234 @@ def list_tags():
     tags = conn.execute('SELECT * FROM tags').fetchall()  # Fetch all tags from the database
     conn.close()
     return render_template('admin/list_tags.html', tags=tags)
+
+@admin_bp.route('/edit_member', methods=['GET', 'POST'])
+@admin_bp.route('/edit_member/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_member(id=None):
+    conn = get_db_connection()
+    member = None
+    
+    if id:  # edit mode
+        member = conn.execute('SELECT * FROM members WHERE id = ?', (id,)).fetchone()
+        if not member:
+            conn.close()
+            flash('Member not found.')
+            return redirect(url_for('admin.list_members'))
+
+    if request.method == 'POST':
+        name = request.form['name']
+        profile_pic = request.form['profile_pic']  # Or handle file uploads
+        bio = request.form['bio']
+        linkedin = request.form['linkedin_url']
+        portfolio = request.form['portfolio_url']
+        github = request.form['github_url']
+        join_year = request.form['join_year']
+        exit_year = request.form['exit_year']
+
+        if id:  # update
+            conn.execute('''
+                UPDATE members
+                SET name = ?, profile_pic = ?, bio = ?, linkedin_url = ?, portfolio_url = ?, github_url = ?, join_year = ?, exit_year = ?
+                WHERE id = ?
+            ''', (name, profile_pic, bio, linkedin, portfolio, github, join_year, exit_year, id))
+        else:  # insert new
+            conn.execute('''
+                INSERT INTO members (name, profile_pic, bio, linkedin_url, portfolio_url, github_url, join_year, exit_year)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (name, profile_pic, bio, linkedin, portfolio, github, join_year, exit_year))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin.list_members'))
+
+    conn.close()
+    return render_template('admin/edit_member.html', member=member)
+
+@admin_bp.route('/delete_member/<int:id>', methods=['POST'])
+@admin_required
+def delete_member(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM members WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    flash(f'Member {id} deleted successfully.')
+    return redirect(url_for('admin.list_members'))
+
+
+@admin_bp.route('/edit_tag', methods=['GET', 'POST'])
+@admin_bp.route('/edit_tag/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_tag(id=None):
+    conn = get_db_connection()
+    tag = None
+
+    if id:
+        tag = conn.execute('SELECT * FROM tags WHERE id = ?', (id,)).fetchone()
+        if not tag:
+            conn.close()
+            flash("Tag not found.")
+            return redirect(url_for('admin.list_tags'))
+
+    if request.method == 'POST':
+        name = request.form['name']
+        if id:
+            conn.execute('UPDATE tags SET name = ? WHERE id = ?', (name, id))
+        else:
+            conn.execute('INSERT INTO tags (name) VALUES (?)', (name,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin.list_tags'))
+
+    conn.close()
+    return render_template('admin/edit_tag.html', tag=tag)
+
+@admin_bp.route('/delete_tag/<int:id>', methods=['POST'])
+@admin_required
+def delete_tag(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM tags WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('admin.list_tags'))
+
+@admin_bp.route('/edit_blog', methods=['GET', 'POST'])
+@admin_bp.route('/edit_blog/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_blog(id=None):
+    conn = get_db_connection()
+    blog = None
+
+    if id:
+        blog = conn.execute('SELECT * FROM blogs WHERE id = ?', (id,)).fetchone()
+        if not blog:
+            conn.close()
+            flash("Blog not found.")
+            return redirect(url_for('admin.list_blogs'))
+
+    if request.method == 'POST':
+        title = request.form['title']
+        thumbnail = request.form['thumbnail']
+        slug = request.form['slug']
+        date_posted = request.form['date_posted']
+        content = request.form['content']
+
+        if id:
+            conn.execute('''
+                UPDATE blogs SET title=?, thumbnail=?, slug=?, date_posted=?, content=?
+                WHERE id=?
+            ''', (title, thumbnail, slug, date_posted, content, id))
+        else:
+            conn.execute('''
+                INSERT INTO blogs (title, thumbnail, slug, date_posted, content)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (title, thumbnail, slug, date_posted, content))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin.list_blogs'))
+
+    conn.close()
+    return render_template('admin/edit_blog.html', blog=blog)
+
+@admin_bp.route('/delete_blog/<int:id>', methods=['POST'])
+@admin_required
+def delete_blog(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM blogs WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('admin.list_blogs'))
+
+@admin_bp.route('/edit_event', methods=['GET', 'POST'])
+@admin_bp.route('/edit_event/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_event(id=None):
+    conn = get_db_connection()
+    event = None
+
+    if id:
+        event = conn.execute('SELECT * FROM events WHERE id = ?', (id,)).fetchone()
+        if not event:
+            conn.close()
+            flash("Event not found.")
+            return redirect(url_for('admin.list_events'))
+
+    if request.method == 'POST':
+        title = request.form['title']
+        slug = request.form['slug']
+        event_date = request.form['event_date']
+        content = request.form['content']
+
+        if id:
+            conn.execute('''
+                UPDATE events SET title=?, slug=?, event_date=?, content=? WHERE id=?
+            ''', (title, slug, event_date, content, id))
+        else:
+            conn.execute('''
+                INSERT INTO events (title, slug, event_date, content)
+                VALUES (?, ?, ?, ?)
+            ''', (title, slug, event_date, content))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin.list_events'))
+
+    conn.close()
+    return render_template('admin/edit_event.html', event=event)
+
+@admin_bp.route('/delete_event/<int:id>', methods=['POST'])
+@admin_required
+def delete_event(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM events WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('admin.list_events'))
+
+@admin_bp.route('/edit_project', methods=['GET', 'POST'])
+@admin_bp.route('/edit_project/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_project(id=None):
+    conn = get_db_connection()
+    project = None
+
+    if id:
+        project = conn.execute('SELECT * FROM projects WHERE id = ?', (id,)).fetchone()
+        if not project:
+            conn.close()
+            flash("Project not found.")
+            return redirect(url_for('admin.list_projects'))
+
+    if request.method == 'POST':
+        title = request.form['title']
+        thumbnail = request.form['thumbnail']
+        slug = request.form['slug']
+        date_posted = request.form['date_posted']
+        content = request.form['content']
+
+        if id:
+            conn.execute('''
+                UPDATE projects SET title=?, thumbnail=?, slug=?, date_posted=?, content=? WHERE id=?
+            ''', (title, thumbnail, slug, date_posted, content, id))
+        else:
+            conn.execute('''
+                INSERT INTO projects (title, thumbnail, slug, date_posted, content)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (title, thumbnail, slug, date_posted, content))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin.list_projects'))
+
+    conn.close()
+    return render_template('admin/edit_project.html', project=project)
+
+@admin_bp.route('/delete_project/<int:id>', methods=['POST'])
+@admin_required
+def delete_project(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM projects WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('admin.list_projects'))
