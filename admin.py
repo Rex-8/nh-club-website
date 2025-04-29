@@ -2,34 +2,45 @@ import hashlib
 from functools import wraps
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash
 import sqlite3
+from utils.db_utils import get_db_connection
 
-# Create a Blueprint for admin routes
-admin_bp = Blueprint('admin', __name__, url_prefix='/a1b2c3d4')  # URL prefix to obscure admin path
+admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
-# Connect to the admin database
 def get_admin_db_connection():
-    conn = sqlite3.connect('database/admin_site.db')  # Path to the admin database
-    conn.row_factory = sqlite3.Row  # Return rows as dictionaries
+    conn = sqlite3.connect('database/admin_site.db')
+    conn.row_factory = sqlite3.Row
     return conn
 
-# Admin login route
+@admin_bp.route('/')
+def admin_home():
+    if session.get('admin'):
+        return redirect(url_for('admin.admin_tables'))
+    return redirect(url_for('admin.login'))
+
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if session.get('admin'):
+        return redirect(url_for('admin.admin_tables'))
+
     if request.method == 'POST':
-        code = request.form['code']
-        hash_val = hashlib.sha256(code.encode()).hexdigest()
+        username = request.form['username']
+        password = request.form['password']
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
 
         conn = get_admin_db_connection()
-        result = conn.execute("SELECT * FROM admin_codes WHERE code_hash = ?", (hash_val,)).fetchone()
+        admin = conn.execute(
+            "SELECT * FROM admin_users WHERE username = ? AND password_hash = ?",
+            (username, password_hash)
+        ).fetchone()
         conn.close()
 
-        if result:
+        if admin:
             session['admin'] = True
-            return redirect(url_for('admin.admin_dashboard'))
-        flash("Invalid code")
+            return redirect(url_for('admin.admin_tables'))
+        flash("Invalid username or password")
+
     return render_template('admin/login.html')
 
-# Protect admin routes
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -38,8 +49,55 @@ def admin_required(f):
         return f(*args, **kwargs)
     return wrapper
 
-# Admin dashboard route
-@admin_bp.route('/dashboard')
+@admin_bp.route('/tables')
 @admin_required
-def admin_dashboard():
-    return render_template('admin/dashboard.html')
+def admin_tables():
+    # List of tables to be displayed in the admin panel
+    tables = [
+        {'name': 'Members', 'url': url_for('admin.list_members')},
+        {'name': 'Blogs', 'url': url_for('admin.list_blogs')},
+        {'name': 'Events', 'url': url_for('admin.list_events')},
+        {'name': 'Projects', 'url': url_for('admin.list_projects')},
+        {'name': 'Tags', 'url': url_for('admin.list_tags')}
+    ]
+    return render_template('admin/tables.html', tables=tables)
+
+@admin_bp.route('/list_members')
+@admin_required
+def list_members():
+    conn = get_db_connection()
+    members = conn.execute('SELECT * FROM members').fetchall()
+    conn.close()
+    return render_template('admin/list_members.html', members=members)
+
+@admin_bp.route('/list_blogs')
+@admin_required
+def list_blogs():
+    conn = get_db_connection()
+    blogs = conn.execute('SELECT * FROM blogs').fetchall()  # Fetch all blogs from the database
+    conn.close()
+    return render_template('admin/list_blogs.html', blogs=blogs)
+
+@admin_bp.route('/list_events')
+@admin_required
+def list_events():
+    conn = get_db_connection()
+    events = conn.execute('SELECT * FROM events').fetchall()  # Fetch all events from the database
+    conn.close()
+    return render_template('admin/list_events.html', events=events)
+
+@admin_bp.route('/list_projects')
+@admin_required
+def list_projects():
+    conn = get_db_connection()
+    projects = conn.execute('SELECT * FROM projects').fetchall()  # Fetch all projects from the database
+    conn.close()
+    return render_template('admin/list_projects.html', projects=projects)
+
+@admin_bp.route('/list_tags')
+@admin_required
+def list_tags():
+    conn = get_db_connection()
+    tags = conn.execute('SELECT * FROM tags').fetchall()  # Fetch all tags from the database
+    conn.close()
+    return render_template('admin/list_tags.html', tags=tags)

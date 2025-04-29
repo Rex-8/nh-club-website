@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}List of Events | NH Club{% endblock %}
+
+{% block content %}
+  <h1>Events</h1>
+
+  <ul>
+    {% for event in events %}
+      <li>
+        <a href="{{ url_for('admin.edit_event', id=event.id) }}">{{ event.title }}</a><br>
+        <small>Event date: {{ event.event_date }}</small>
+      </li>
+    {% else %}
+      <li>No events found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

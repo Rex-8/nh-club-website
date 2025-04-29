@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Tables | NH Club{% endblock %}
+
+{% block content %}
+  <h1>Admin Tables</h1>
+  <ul style="list-style: none; padding: 0;">
+    {% for table in tables %}
+      <li style="margin-bottom: 10px;">
+        <a href="{{ table.url }}">{{ table.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

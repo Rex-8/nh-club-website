@@ -4,6 +4,7 @@ from admin import admin_bp
 
 app = Flask(__name__)
 app.register_blueprint(admin_bp)
+app.secret_key = '3d94f6b9a9b29bc8b3938ab9f70cb372'
 
 # Initialize the database
 init_db()

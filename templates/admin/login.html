@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Login | NH Club{% endblock %}
+
+{% block content %}
+  <h1>Admin Login</h1>
+
+  <form method="POST">
+    <label for="username">Username</label><br>
+    <input type="text" id="username" name="username" required><br><br>
+
+    <label for="password">Password</label><br>
+    <input type="password" id="password" name="password" required><br><br>
+
+    <button type="submit">Login</button>
+  </form>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul style="color: red;">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+{% endblock %}

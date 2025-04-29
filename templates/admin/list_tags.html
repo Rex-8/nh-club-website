@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}List of Tags | NH Club{% endblock %}
+
+{% block content %}
+  <h1>Tags</h1>
+
+  <ul>
+    {% for tag in tags %}
+      <li>
+        <a href="{{ url_for('admin.edit_tag', id=tag.id) }}">{{ tag.name }}</a>
+      </li>
+    {% else %}
+      <li>No tags found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
