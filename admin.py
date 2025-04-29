@@ -197,39 +197,87 @@ def delete_tag(id):
 @admin_required
 def edit_blog(id=None):
     conn = get_db_connection()
+
+    # Fetch all tags and members for dropdowns
+    all_tags    = conn.execute('SELECT id, name FROM tags').fetchall()
+    all_members = conn.execute('SELECT id, name FROM members').fetchall()
+
     blog = None
+    selected_tags = []
+    selected_authors = []
+    selected_assistants = []
 
     if id:
+        # Load the blog
         blog = conn.execute('SELECT * FROM blogs WHERE id = ?', (id,)).fetchone()
         if not blog:
             conn.close()
             flash("Blog not found.")
             return redirect(url_for('admin.list_blogs'))
 
+        # Load its tags
+        rows = conn.execute('SELECT tag_id FROM blog_tags WHERE blog_id = ?', (id,)).fetchall()
+        selected_tags = [r['tag_id'] for r in rows]
+
+        # Load its authors
+        rows = conn.execute('SELECT member_id FROM blog_authors WHERE blog_id = ?', (id,)).fetchall()
+        selected_authors = [r['member_id'] for r in rows]
+
+        # Load its assistants
+        rows = conn.execute('SELECT member_id FROM assist_blog WHERE blog_id = ?', (id,)).fetchall()
+        selected_assistants = [r['member_id'] for r in rows]
+
     if request.method == 'POST':
-        title = request.form['title']
-        thumbnail = request.form['thumbnail']
-        slug = request.form['slug']
+        # 1) Upsert main blog record
+        title       = request.form['title']
+        thumbnail   = request.form['thumbnail']
+        slug        = request.form['slug']
         date_posted = request.form['date_posted']
-        content = request.form['content']
+        content     = request.form['content']
 
         if id:
             conn.execute('''
-                UPDATE blogs SET title=?, thumbnail=?, slug=?, date_posted=?, content=?
+                UPDATE blogs
+                SET title=?, thumbnail=?, slug=?, date_posted=?, content=?
                 WHERE id=?
             ''', (title, thumbnail, slug, date_posted, content, id))
         else:
-            conn.execute('''
+            cur = conn.execute('''
                 INSERT INTO blogs (title, thumbnail, slug, date_posted, content)
                 VALUES (?, ?, ?, ?, ?)
             ''', (title, thumbnail, slug, date_posted, content))
+            id = cur.lastrowid
+
+        # 2) Refresh link tables
+        # Tags
+        conn.execute('DELETE FROM blog_tags WHERE blog_id=?', (id,))
+        for tag_id in request.form.getlist('tags'):
+            conn.execute('INSERT INTO blog_tags (blog_id, tag_id) VALUES (?,?)', (id, tag_id))
+
+        # Authors
+        conn.execute('DELETE FROM blog_authors WHERE blog_id=?', (id,))
+        for member_id in request.form.getlist('authors'):
+            conn.execute('INSERT INTO blog_authors (blog_id, member_id) VALUES (?,?)', (id, member_id))
+
+        # Assistants
+        conn.execute('DELETE FROM assist_blog WHERE blog_id=?', (id,))
+        for member_id in request.form.getlist('assistants'):
+            conn.execute('INSERT INTO assist_blog (blog_id, member_id) VALUES (?,?)', (id, member_id))
 
         conn.commit()
         conn.close()
         return redirect(url_for('admin.list_blogs'))
 
     conn.close()
-    return render_template('admin/edit_blog.html', blog=blog)
+    return render_template('admin/edit_blog.html',
+        blog=blog,
+        all_tags=all_tags,
+        all_members=all_members,
+        selected_tags=selected_tags,
+        selected_authors=selected_authors,
+        selected_assistants=selected_assistants
+    )
+
 
 @admin_bp.route('/delete_blog/<int:id>', methods=['POST'])
 @admin_required

@@ -1,10 +1,16 @@
 from flask import Flask, render_template,send_from_directory
 from utils.db_utils import init_db, get_db_connection
 from admin import admin_bp
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 app.register_blueprint(admin_bp)
-app.secret_key = '3d94f6b9a9b29bc8b3938ab9f70cb372'
+
+load_dotenv()  # This loads the .env file
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Use the secret key from the .env file
+
 
 # Initialize the database
 init_db()
