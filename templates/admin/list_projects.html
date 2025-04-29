@@ -11,7 +11,10 @@
         {% for project in projects %}
             <li>
                 <a href="{{ url_for('admin.edit_project', id=project.id) }}">{{ project.title }}</a><br>
-                <small>Posted on: {{ project.date_posted }}</small>
+                <small>Posted on: {{ project.date_posted }}</small><br>
+                <form method="POST" action="{{ url_for('admin.delete_project', id=project.id) }}" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Delete this project?');">Delete</button>
+                </form>
             </li>
         {% else %}
             <li>No projects found.</li>

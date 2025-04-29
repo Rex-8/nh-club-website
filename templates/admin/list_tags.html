@@ -10,7 +10,10 @@
     <ul>
         {% for tag in tags %}
             <li>
-                <a href="{{ url_for('admin.edit_tag', id=tag.id) }}">{{ tag.name }}</a>
+                <a href="{{ url_for('admin.edit_tag', id=tag.id) }}">{{ tag.name }}</a><br>
+                <form method="POST" action="{{ url_for('admin.delete_tag', id=tag.id) }}" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Delete this tag?');">Delete</button>
+                </form>
             </li>
         {% else %}
             <li>No tags found.</li>

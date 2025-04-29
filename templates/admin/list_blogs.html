@@ -6,12 +6,15 @@
 </head>
 <body>
     <h1>Blogs</h1>
-    
+
     <ul>
         {% for blog in blogs %}
             <li>
                 <a href="{{ url_for('admin.edit_blog', id=blog.id) }}">{{ blog.title }}</a><br>
-                <small>Posted on: {{ blog.date_posted }}</small>
+                <small>Posted on: {{ blog.date_posted }}</small><br>
+                <form method="POST" action="{{ url_for('admin.delete_blog', id=blog.id) }}" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Delete this blog?');">Delete</button>
+                </form>
             </li>
         {% else %}
             <li>No blogs found.</li>
