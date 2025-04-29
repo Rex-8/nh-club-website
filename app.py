@@ -1,7 +1,9 @@
 from flask import Flask, render_template,send_from_directory
 from utils.db_utils import init_db, get_db_connection
+from admin import admin_bp
 
 app = Flask(__name__)
+app.register_blueprint(admin_bp)
 
 # Initialize the database
 init_db()
