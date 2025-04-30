@@ -22,9 +22,15 @@
     <label>Content:</label><br>
     <textarea name="content">{{ event.content if event else '' }}</textarea><br><br>
 
+
+    <!-- Thumbnail -->
+    <label>Thumbnail Filename:</label><br>
+    <input type="text" name="thumbnail" value="{{ event.thumbnail if event else '' }}"><br><br>
+
     <button type="submit">Save Main</button>
   </form>
   <hr>
+
 
   <!-- Tags -->
   <form id="tagForm" method="POST" action="{{ url_for('admin.update_event_tags', event_id=event.id) }}">
