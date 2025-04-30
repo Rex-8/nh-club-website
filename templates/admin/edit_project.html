@@ -1,31 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ "Edit" if project else "Add" }} Project</title>
+  <meta charset="UTF-8">
+  <title>{{ "Edit" if project else "Add" }} Project</title>
+  <script src="{{ url_for('static', filename='js/multi_select_input.js') }}"></script>
 </head>
 <body>
-    <h1>{{ "Edit" if project else "Add New" }} Project</h1>
+  <h1>{{ "Edit" if project else "Add New" }} Project</h1>
 
-    <form method="POST">
-        <label>Title:</label><br>
-        <input type="text" name="title" value="{{ project.title if project else '' }}"><br><br>
+  <!-- Main form -->
+  <form method="POST" action="">
+    <label>Title:</label><br>
+    <input type="text" name="title" value="{{ project.title if project else '' }}"><br><br>
 
-        <label>Thumbnail Filename:</label><br>
-        <input type="text" name="thumbnail" value="{{ project.thumbnail if project else '' }}"><br><br>
+    <label>Thumbnail Filename:</label><br>
+    <input type="text" name="thumbnail" value="{{ project.thumbnail if project else '' }}"><br><br>
 
-        <label>Slug:</label><br>
-        <input type="text" name="slug" value="{{ project.slug if project else '' }}"><br><br>
+    <label>Slug:</label><br>
+    <input type="text" name="slug" value="{{ project.slug if project else '' }}"><br><br>
 
-        <label>Date Posted:</label><br>
-        <input type="text" name="date_posted" value="{{ project.date_posted if project else '' }}"><br><br>
+    <label>Date Posted:</label><br>
+    <input type="text" name="date_posted" value="{{ project.date_posted if project else '' }}"><br><br>
 
-        <label>Content:</label><br>
-        <textarea name="content">{{ project.content if project else '' }}</textarea><br><br>
+    <label>Content:</label><br>
+    <textarea name="content">{{ project.content if project else '' }}</textarea><br><br>
 
-        <button type="submit">Save</button>
-    </form>
+    <button type="submit">Save Main</button>
+  </form>
+  <hr>
 
-    <p><a href="{{ url_for('admin.list_projects') }}">Back to Projects</a></p>
+  <!-- Tags -->
+  <form id="tagForm" method="POST" action="{{ url_for('admin.update_project_tags', project_id=project.id) }}">
+    <h4>Tags</h4>
+    <div id="tagContainer"></div>
+    <input type="hidden" name="tags" id="hidden-tags">
+  </form>
+
+  <!-- Authors -->
+  <form id="authorForm" method="POST" action="{{ url_for('admin.update_project_authors', project_id=project.id) }}">
+    <h4>Authors</h4>
+    <div id="authorContainer"></div>
+    <input type="hidden" name="authors" id="hidden-authors">
+  </form>
+
+  <!-- Assistants -->
+  <form id="assistantForm" method="POST" action="{{ url_for('admin.update_project_assistants', project_id=project.id) }}">
+    <h4>Assistants</h4>
+    <div id="assistantContainer"></div>
+    <input type="hidden" name="assistants" id="hidden-assistants">
+  </form>
+
+  <p><a href="{{ url_for('admin.list_projects') }}">Back to Projects</a></p>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const allTags = {{ all_tags | map(attribute='name') | list | tojson }};
+      const allMembers = {{ all_members | map(attribute='name') | list | tojson }};
+      const selectedTags = {{ selected_tags | tojson }};
+      const selectedAuthors = {{ selected_authors | tojson }};
+      const selectedAssistants = {{ selected_assistants | tojson }};
+
+      const tagInput = new MultiSelectInput('#tagContainer', allTags, tags => {
+        document.getElementById('hidden-tags').value = JSON.stringify(tags);
+        document.getElementById('tagForm').submit();
+      });
+      tagInput.setTags(selectedTags);
+
+      const authorInput = new MultiSelectInput('#authorContainer', allMembers, authors => {
+        document.getElementById('hidden-authors').value = JSON.stringify(authors);
+        document.getElementById('authorForm').submit();
+      });
+      authorInput.setTags(selectedAuthors);
+
+      const assistantInput = new MultiSelectInput('#assistantContainer', allMembers, assistants => {
+        document.getElementById('hidden-assistants').value = JSON.stringify(assistants);
+        document.getElementById('assistantForm').submit();
+      });
+      assistantInput.setTags(selectedAssistants);
+    });
+  </script>
 </body>
 </html>

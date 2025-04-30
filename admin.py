@@ -258,8 +258,6 @@ def edit_blog(id=None):
         selected_assistants=selected_assistants
     )
 
-
-# Mini‐form endpoints
 @admin_bp.route('/update_blog_tags/<int:blog_id>', methods=['POST'])
 @admin_required
 def update_blog_tags(blog_id):
@@ -310,14 +308,14 @@ def delete_blog(id):
 @admin_required
 def edit_event(id=None):
     conn = get_db_connection()
+    all_tags = conn.execute('SELECT id, name FROM tags').fetchall()
+    all_members = conn.execute('SELECT id, name FROM members').fetchall()
     event = None
 
     if id:
         event = conn.execute('SELECT * FROM events WHERE id = ?', (id,)).fetchone()
         if not event:
-            conn.close()
-            flash("Event not found.")
-            return redirect(url_for('admin.list_events'))
+            conn.close(); flash("Event not found."); return redirect(url_for('admin.list_events'))
 
     if request.method == 'POST':
         title = request.form['title']
@@ -327,28 +325,90 @@ def edit_event(id=None):
 
         if id:
             conn.execute('''
-                UPDATE events SET title=?, slug=?, event_date=?, content=? WHERE id=?
+                UPDATE events SET title=?, slug=?, event_date=?, content=?
+                WHERE id=?
             ''', (title, slug, event_date, content, id))
         else:
-            conn.execute('''
+            cur = conn.execute('''
                 INSERT INTO events (title, slug, event_date, content)
                 VALUES (?, ?, ?, ?)
             ''', (title, slug, event_date, content))
+            id = cur.lastrowid
 
-        conn.commit()
-        conn.close()
+        conn.commit(); conn.close()
         return redirect(url_for('admin.list_events'))
 
+    selected_tags = [r['name'] for r in conn.execute('''
+        SELECT tags.name FROM tags
+        JOIN event_tags ON tags.id = event_tags.tag_id
+        WHERE event_tags.event_id = ?
+    ''', (id,))]
+    selected_authors = [r['name'] for r in conn.execute('''
+        SELECT members.name FROM members
+        JOIN event_authors ON members.id = event_authors.member_id
+        WHERE event_authors.event_id = ?
+    ''', (id,))]
+    selected_assistants = [r['name'] for r in conn.execute('''
+        SELECT members.name FROM members
+        JOIN assist_event ON members.id = assist_event.member_id
+        WHERE assist_event.event_id = ?
+    ''', (id,))]
+
     conn.close()
-    return render_template('admin/edit_event.html', event=event)
+    return render_template('admin/edit_event.html',
+        event=event,
+        all_tags=all_tags,
+        all_members=all_members,
+        selected_tags=selected_tags,
+        selected_authors=selected_authors,
+        selected_assistants=selected_assistants
+    )
+
+@admin_bp.route('/update_event_tags/<int:event_id>', methods=['POST'])
+@admin_required
+def update_event_tags(event_id):
+    tag_names = json.loads(request.form.get('tags', '[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM event_tags WHERE event_id = ?', (event_id,))
+    for name in tag_names:
+        row = conn.execute('SELECT id FROM tags WHERE name = ?', (name,)).fetchone()
+        if row:
+            conn.execute('INSERT INTO event_tags (event_id, tag_id) VALUES (?, ?)', (event_id, row['id']))
+    conn.commit(); conn.close()
+    return ('', 204)
+
+@admin_bp.route('/update_event_authors/<int:event_id>', methods=['POST'])
+@admin_required
+def update_event_authors(event_id):
+    names = json.loads(request.form.get('authors', '[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM event_authors WHERE event_id = ?', (event_id,))
+    for name in names:
+        row = conn.execute('SELECT id FROM members WHERE name = ?', (name,)).fetchone()
+        if row:
+            conn.execute('INSERT INTO event_authors (event_id, member_id) VALUES (?, ?)', (event_id, row['id']))
+    conn.commit(); conn.close()
+    return ('', 204)
+
+@admin_bp.route('/update_event_assistants/<int:event_id>', methods=['POST'])
+@admin_required
+def update_event_assistants(event_id):
+    names = json.loads(request.form.get('assistants', '[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM assist_event WHERE event_id = ?', (event_id,))
+    for name in names:
+        row = conn.execute('SELECT id FROM members WHERE name = ?', (name,)).fetchone()
+        if row:
+            conn.execute('INSERT INTO assist_event (event_id, member_id) VALUES (?, ?)', (event_id, row['id']))
+    conn.commit(); conn.close()
+    return ('', 204)
 
 @admin_bp.route('/delete_event/<int:id>', methods=['POST'])
 @admin_required
 def delete_event(id):
     conn = get_db_connection()
     conn.execute('DELETE FROM events WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
+    conn.commit(); conn.close()
     return redirect(url_for('admin.list_events'))
 
 @admin_bp.route('/edit_project', methods=['GET', 'POST'])
@@ -356,14 +416,14 @@ def delete_event(id):
 @admin_required
 def edit_project(id=None):
     conn = get_db_connection()
+    all_tags = conn.execute('SELECT id, name FROM tags').fetchall()
+    all_members = conn.execute('SELECT id, name FROM members').fetchall()
     project = None
 
     if id:
         project = conn.execute('SELECT * FROM projects WHERE id = ?', (id,)).fetchone()
         if not project:
-            conn.close()
-            flash("Project not found.")
-            return redirect(url_for('admin.list_projects'))
+            conn.close(); flash("Project not found."); return redirect(url_for('admin.list_projects'))
 
     if request.method == 'POST':
         title = request.form['title']
@@ -374,26 +434,88 @@ def edit_project(id=None):
 
         if id:
             conn.execute('''
-                UPDATE projects SET title=?, thumbnail=?, slug=?, date_posted=?, content=? WHERE id=?
+                UPDATE projects SET title=?, thumbnail=?, slug=?, date_posted=?, content=?
+                WHERE id=?
             ''', (title, thumbnail, slug, date_posted, content, id))
         else:
-            conn.execute('''
+            cur = conn.execute('''
                 INSERT INTO projects (title, thumbnail, slug, date_posted, content)
                 VALUES (?, ?, ?, ?, ?)
             ''', (title, thumbnail, slug, date_posted, content))
+            id = cur.lastrowid
 
-        conn.commit()
-        conn.close()
+        conn.commit(); conn.close()
         return redirect(url_for('admin.list_projects'))
 
+    selected_tags = [r['name'] for r in conn.execute('''
+        SELECT tags.name FROM tags
+        JOIN project_tags ON tags.id = project_tags.tag_id
+        WHERE project_tags.project_id = ?
+    ''', (id,))]
+    selected_authors = [r['name'] for r in conn.execute('''
+        SELECT members.name FROM members
+        JOIN project_authors ON members.id = project_authors.member_id
+        WHERE project_authors.project_id = ?
+    ''', (id,))]
+    selected_assistants = [r['name'] for r in conn.execute('''
+        SELECT members.name FROM members
+        JOIN assist_project ON members.id = assist_project.member_id
+        WHERE assist_project.project_id = ?
+    ''', (id,))]
+
     conn.close()
-    return render_template('admin/edit_project.html', project=project)
+    return render_template('admin/edit_project.html',
+        project=project,
+        all_tags=all_tags,
+        all_members=all_members,
+        selected_tags=selected_tags,
+        selected_authors=selected_authors,
+        selected_assistants=selected_assistants
+    )
+
+@admin_bp.route('/update_project_tags/<int:project_id>', methods=['POST'])
+@admin_required
+def update_project_tags(project_id):
+    tag_names = json.loads(request.form.get('tags', '[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM project_tags WHERE project_id = ?', (project_id,))
+    for name in tag_names:
+        row = conn.execute('SELECT id FROM tags WHERE name = ?', (name,)).fetchone()
+        if row:
+            conn.execute('INSERT INTO project_tags (project_id, tag_id) VALUES (?, ?)', (project_id, row['id']))
+    conn.commit(); conn.close()
+    return ('', 204)
+
+@admin_bp.route('/update_project_authors/<int:project_id>', methods=['POST'])
+@admin_required
+def update_project_authors(project_id):
+    names = json.loads(request.form.get('authors', '[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM project_authors WHERE project_id = ?', (project_id,))
+    for name in names:
+        row = conn.execute('SELECT id FROM members WHERE name = ?', (name,)).fetchone()
+        if row:
+            conn.execute('INSERT INTO project_authors (project_id, member_id) VALUES (?, ?)', (project_id, row['id']))
+    conn.commit(); conn.close()
+    return ('', 204)
+
+@admin_bp.route('/update_project_assistants/<int:project_id>', methods=['POST'])
+@admin_required
+def update_project_assistants(project_id):
+    names = json.loads(request.form.get('assistants', '[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM assist_project WHERE project_id = ?', (project_id,))
+    for name in names:
+        row = conn.execute('SELECT id FROM members WHERE name = ?', (name,)).fetchone()
+        if row:
+            conn.execute('INSERT INTO assist_project (project_id, member_id) VALUES (?, ?)', (project_id, row['id']))
+    conn.commit(); conn.close()
+    return ('', 204)
 
 @admin_bp.route('/delete_project/<int:id>', methods=['POST'])
 @admin_required
 def delete_project(id):
     conn = get_db_connection()
     conn.execute('DELETE FROM projects WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
+    conn.commit(); conn.close()
     return redirect(url_for('admin.list_projects'))
