@@ -3,6 +3,7 @@ from functools import wraps
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash
 import sqlite3
 from utils.db_utils import get_db_connection
+import json 
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -197,38 +198,17 @@ def delete_tag(id):
 @admin_required
 def edit_blog(id=None):
     conn = get_db_connection()
-
-    # Fetch all tags and members for dropdowns
     all_tags    = conn.execute('SELECT id, name FROM tags').fetchall()
     all_members = conn.execute('SELECT id, name FROM members').fetchall()
-
     blog = None
-    selected_tags = []
-    selected_authors = []
-    selected_assistants = []
 
     if id:
-        # Load the blog
         blog = conn.execute('SELECT * FROM blogs WHERE id = ?', (id,)).fetchone()
         if not blog:
-            conn.close()
-            flash("Blog not found.")
-            return redirect(url_for('admin.list_blogs'))
-
-        # Load its tags
-        rows = conn.execute('SELECT tag_id FROM blog_tags WHERE blog_id = ?', (id,)).fetchall()
-        selected_tags = [r['tag_id'] for r in rows]
-
-        # Load its authors
-        rows = conn.execute('SELECT member_id FROM blog_authors WHERE blog_id = ?', (id,)).fetchall()
-        selected_authors = [r['member_id'] for r in rows]
-
-        # Load its assistants
-        rows = conn.execute('SELECT member_id FROM assist_blog WHERE blog_id = ?', (id,)).fetchall()
-        selected_assistants = [r['member_id'] for r in rows]
+            conn.close(); flash("Blog not found."); return redirect(url_for('admin.list_blogs'))
 
     if request.method == 'POST':
-        # 1) Upsert main blog record
+        # Only main-save if this is the main form
         title       = request.form['title']
         thumbnail   = request.form['thumbnail']
         slug        = request.form['slug']
@@ -237,8 +217,7 @@ def edit_blog(id=None):
 
         if id:
             conn.execute('''
-                UPDATE blogs
-                SET title=?, thumbnail=?, slug=?, date_posted=?, content=?
+                UPDATE blogs SET title=?, thumbnail=?, slug=?, date_posted=?, content=?
                 WHERE id=?
             ''', (title, thumbnail, slug, date_posted, content, id))
         else:
@@ -248,25 +227,26 @@ def edit_blog(id=None):
             ''', (title, thumbnail, slug, date_posted, content))
             id = cur.lastrowid
 
-        # 2) Refresh link tables
-        # Tags
-        conn.execute('DELETE FROM blog_tags WHERE blog_id=?', (id,))
-        for tag_id in request.form.getlist('tags'):
-            conn.execute('INSERT INTO blog_tags (blog_id, tag_id) VALUES (?,?)', (id, tag_id))
-
-        # Authors
-        conn.execute('DELETE FROM blog_authors WHERE blog_id=?', (id,))
-        for member_id in request.form.getlist('authors'):
-            conn.execute('INSERT INTO blog_authors (blog_id, member_id) VALUES (?,?)', (id, member_id))
-
-        # Assistants
-        conn.execute('DELETE FROM assist_blog WHERE blog_id=?', (id,))
-        for member_id in request.form.getlist('assistants'):
-            conn.execute('INSERT INTO assist_blog (blog_id, member_id) VALUES (?,?)', (id, member_id))
-
         conn.commit()
         conn.close()
         return redirect(url_for('admin.list_blogs'))
+
+    # Load selected names for each relation
+    selected_tags = [r['name'] for r in conn.execute('''
+        SELECT tags.name FROM tags
+        JOIN blog_tags ON tags.id = blog_tags.tag_id
+        WHERE blog_tags.blog_id = ?
+    ''', (id,))]
+    selected_authors = [r['name'] for r in conn.execute('''
+        SELECT members.name FROM members
+        JOIN blog_authors ON members.id = blog_authors.member_id
+        WHERE blog_authors.blog_id = ?
+    ''', (id,))]
+    selected_assistants = [r['name'] for r in conn.execute('''
+        SELECT members.name FROM members
+        JOIN assist_blog ON members.id = assist_blog.member_id
+        WHERE assist_blog.blog_id = ?
+    ''', (id,))]
 
     conn.close()
     return render_template('admin/edit_blog.html',
@@ -278,6 +258,43 @@ def edit_blog(id=None):
         selected_assistants=selected_assistants
     )
 
+
+# Mini‐form endpoints
+@admin_bp.route('/update_blog_tags/<int:blog_id>', methods=['POST'])
+@admin_required
+def update_blog_tags(blog_id):
+    tag_names = json.loads(request.form.get('tags','[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM blog_tags WHERE blog_id = ?', (blog_id,))
+    for name in tag_names:
+        row = conn.execute('SELECT id FROM tags WHERE name = ?', (name,)).fetchone()
+        if row: conn.execute('INSERT INTO blog_tags (blog_id, tag_id) VALUES (?,?)', (blog_id, row['id']))
+    conn.commit(); conn.close()
+    return ('',204)
+
+@admin_bp.route('/update_blog_authors/<int:blog_id>', methods=['POST'])
+@admin_required
+def update_blog_authors(blog_id):
+    names = json.loads(request.form.get('authors','[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM blog_authors WHERE blog_id = ?', (blog_id,))
+    for name in names:
+        row = conn.execute('SELECT id FROM members WHERE name = ?', (name,)).fetchone()
+        if row: conn.execute('INSERT INTO blog_authors (blog_id, member_id) VALUES (?,?)', (blog_id, row['id']))
+    conn.commit(); conn.close()
+    return ('',204)
+
+@admin_bp.route('/update_blog_assistants/<int:blog_id>', methods=['POST'])
+@admin_required
+def update_blog_assistants(blog_id):
+    names = json.loads(request.form.get('assistants','[]'))
+    conn = get_db_connection()
+    conn.execute('DELETE FROM assist_blog WHERE blog_id = ?', (blog_id,))
+    for name in names:
+        row = conn.execute('SELECT id FROM members WHERE name = ?', (name,)).fetchone()
+        if row: conn.execute('INSERT INTO assist_blog (blog_id, member_id) VALUES (?,?)', (blog_id, row['id']))
+    conn.commit(); conn.close()
+    return ('',204)
 
 @admin_bp.route('/delete_blog/<int:id>', methods=['POST'])
 @admin_required

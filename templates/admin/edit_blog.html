@@ -3,61 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ "Edit" if blog else "Add New" }} Blog</title>
+  <script src="{{ url_for('static', filename='js/multi_select_input.js') }}"></script>
 </head>
 <body>
   <h1>{{ "Edit" if blog else "Add New" }} Blog</h1>
 
-  <form method="POST">
-    <!-- Main fields -->
+  <!-- Main form -->
+  <form method="POST" action="">
     <label>Title:</label><br>
     <input type="text" name="title" value="{{ blog.title if blog else '' }}"><br><br>
-
     <label>Thumbnail Filename:</label><br>
     <input type="text" name="thumbnail" value="{{ blog.thumbnail if blog else '' }}"><br><br>
-
     <label>Slug:</label><br>
     <input type="text" name="slug" value="{{ blog.slug if blog else '' }}"><br><br>
-
     <label>Date Posted:</label><br>
     <input type="text" name="date_posted" value="{{ blog.date_posted if blog else '' }}"><br><br>
-
     <label>Content:</label><br>
     <textarea name="content">{{ blog.content if blog else '' }}</textarea><br><br>
+    <button type="submit">Save Main</button>
+  </form>
+  <hr>
 
-    <!-- Relationship dropdowns -->
-    <label>Tags:</label><br>
-    <select name="tags" multiple size="5">
-      {% for tag in all_tags %}
-        <option value="{{ tag.id }}"
-          {% if tag.id in selected_tags %}selected{% endif %}>
-          {{ tag.name }}
-        </option>
-      {% endfor %}
-    </select><br><br>
+  <!-- Tags mini-form -->
+  <form id="tagForm" method="POST" action="{{ url_for('admin.update_blog_tags', blog_id=blog.id) }}">
+    <h4>Tags</h4>
+    <div id="tagContainer"></div>
+    <input type="hidden" name="tags" id="hidden-tags">
+  </form>
 
-    <label>Authors:</label><br>
-    <select name="authors" multiple size="5">
-      {% for m in all_members %}
-        <option value="{{ m.id }}"
-          {% if m.id in selected_authors %}selected{% endif %}>
-          {{ m.name }}
-        </option>
-      {% endfor %}
-    </select><br><br>
+  <!-- Authors mini-form -->
+  <form id="authorForm" method="POST" action="{{ url_for('admin.update_blog_authors', blog_id=blog.id) }}">
+    <h4>Authors</h4>
+    <div id="authorContainer"></div>
+    <input type="hidden" name="authors" id="hidden-authors">
+  </form>
 
-    <label>Assistants:</label><br>
-    <select name="assistants" multiple size="5">
-      {% for m in all_members %}
-        <option value="{{ m.id }}"
-          {% if m.id in selected_assistants %}selected{% endif %}>
-          {{ m.name }}
-        </option>
-      {% endfor %}
-    </select><br><br>
-
-    <button type="submit">Save</button>
+  <!-- Assistants mini-form -->
+  <form id="assistantForm" method="POST" action="{{ url_for('admin.update_blog_assistants', blog_id=blog.id) }}">
+    <h4>Assistants</h4>
+    <div id="assistantContainer"></div>
+    <input type="hidden" name="assistants" id="hidden-assistants">
   </form>
 
   <p><a href="{{ url_for('admin.list_blogs') }}">Back to Blogs</a></p>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Prepare data arrays
+      const allTags      = {{ all_tags    | map(attribute='name') | list | tojson }};
+      const allMembers   = {{ all_members | map(attribute='name') | list | tojson }};
+      const selectedTags = {{ selected_tags      | tojson }};
+      const selectedAuthors    = {{ selected_authors | tojson }};
+      const selectedAssistants = {{ selected_assistants | tojson }};
+
+      // Tags
+      const tagInput = new MultiSelectInput('#tagContainer', allTags, tags => {
+        document.getElementById('hidden-tags').value = JSON.stringify(tags);
+        document.getElementById('tagForm').submit();
+      });
+      tagInput.setTags(selectedTags);
+
+      // Authors
+      const authorInput = new MultiSelectInput('#authorContainer', allMembers, authors => {
+        document.getElementById('hidden-authors').value = JSON.stringify(authors);
+        document.getElementById('authorForm').submit();
+      });
+      authorInput.setTags(selectedAuthors);
+
+      // Assistants
+      const assistantInput = new MultiSelectInput('#assistantContainer', allMembers, assistants => {
+        document.getElementById('hidden-assistants').value = JSON.stringify(assistants);
+        document.getElementById('assistantForm').submit();
+      });
+      assistantInput.setTags(selectedAssistants);
+    });
+  </script>
 </body>
 </html>
